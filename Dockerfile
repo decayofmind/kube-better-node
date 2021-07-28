@@ -12,6 +12,6 @@ RUN go build
 
 FROM scratch
 
-COPY --from=builder ./kube-betternode /
+COPY --from=builder /build/kube-betternode /
 
 ENTRYPOINT ["/kube-betternode"]
