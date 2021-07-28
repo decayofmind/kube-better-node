@@ -4,8 +4,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"os"
 
+	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -16,14 +16,15 @@ import (
 )
 
 func main() {
-	kubeconfig := flag.String("kubeconfig", os.Getenv("HOME")+"/.kube/config", "kubeconfig file location")
 	dryRun := flag.Bool("dry-run", false, "Dry Run")
 	tolerance := flag.Int("tolerance", 0, "Ignore certain weight difference")
 	flag.Parse()
 
-	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
+	config, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+		clientcmd.NewDefaultClientConfigLoadingRules(),
+		&clientcmd.ConfigOverrides{}).ClientConfig()
 	if err != nil {
-		panic(err.Error())
+		logrus.Fatalf("Couldn't get Kubernetes default config: %s", err)
 	}
 
 	client, err := clientset.NewForConfig(config)
@@ -50,7 +51,7 @@ func main() {
 
 			foundBetter, _, nodeNameBetter := FindBetterPreferredNode(pod, curScore, *tolerance, nodes)
 			if foundBetter {
-				fmt.Printf("Pod %v/%v can possibly be scheduled on %v\n", pod.Namespace, pod.Name, nodeNameBetter)
+				logrus.Infof("Pod %v/%v can possibly be scheduled on %v\n", pod.Namespace, pod.Name, nodeNameBetter)
 				if !*dryRun {
 					err := client.CoreV1().Pods(pod.Namespace).Delete(context.Background(), pod.Name, metav1.DeleteOptions{})
 					if err != nil {
