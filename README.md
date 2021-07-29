@@ -5,7 +5,7 @@ This small program doest the only thing [kubernetes-sigs/descheduler](https://gi
 ## Why?
 
 
-There're at least two rotten unmerged PRs in descheduler repository:
+There're at least two rotten unmerged PRs in the Descheduler repository:
 
 * [#130](https://github.com/kubernetes-sigs/descheduler/pull/130) (`FindBetterPreferredNode` and `CalcPodPriorityScore` are inspired by it. Thanks [@tsu1980](https://github.com/tsu1980))
 * [#129](https://github.com/kubernetes-sigs/descheduler/pull/129)
@@ -32,3 +32,7 @@ Here **kube-better-node** can be usefull.
 helm repo add decayofmind https://decayofmind.github.io/charts/
 helm install kube-better-node decayofmind/kube-better-node
 ```
+
+## Links
+
+* https://github.com/kubernetes-sigs/cluster-capacity

@@ -42,7 +42,7 @@ func main() {
 	}
 
 	for _, node := range nodes {
-		pods, err := ListNodePods(client, node)
+		pods, err := ListPodsOnNode(client, node)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -86,7 +86,7 @@ func ListNodes(client clientset.Interface) ([]*v1.Node, error) {
 	return nodes, nil
 }
 
-func ListNodePods(client clientset.Interface, node *v1.Node) ([]*v1.Pod, error) {
+func ListPodsOnNode(client clientset.Interface, node *v1.Node) ([]*v1.Pod, error) {
 	fieldSelector, err := fields.ParseSelector("spec.nodeName=" + node.Name + ",status.phase!=" + string(v1.PodSucceeded) + ",status.phase!=" + string(v1.PodFailed))
 	if err != nil {
 		return []*v1.Pod{}, err
