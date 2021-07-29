@@ -34,6 +34,8 @@ func main() {
 		panic(err.Error())
 	}
 
+	hasPotential := false
+
 	nodes, err := ListNodes(client)
 	if err != nil {
 		panic(err.Error())
@@ -53,18 +55,21 @@ func main() {
 
 			foundBetter, _, nodeNameBetter := FindBetterPreferredNode(pod, curScore, *tolerance, nodes)
 			if foundBetter {
-				logrus.Infof("Pod %v/%v can possibly be scheduled on %v\n", pod.Namespace, pod.Name, nodeNameBetter)
+				hasPotential = true
+				logrus.Infof("Pod %v/%v can possibly be scheduled on %v", pod.Namespace, pod.Name, nodeNameBetter)
 				if !*dryRun {
 					err := client.CoreV1().Pods(pod.Namespace).Delete(context.Background(), pod.Name, metav1.DeleteOptions{})
 					if err != nil {
 						panic(err.Error())
 					}
-					logrus.Infof("Pod %v/%v has been evicted!\n", pod.Namespace, pod.Name)
+					logrus.Infof("Pod %v/%v has been evicted!", pod.Namespace, pod.Name)
 				}
-			} else {
-				logrus.Info("No Pods to evict\n")
 			}
 		}
+	}
+
+	if !hasPotential {
+		logrus.Info("No Pods to evict")
 	}
 }
 
