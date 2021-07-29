@@ -1,4 +1,4 @@
-module github.com/decayofmind/kube-betternode
+module github.com/decayofmind/kube-better-node
 
 go 1.16
 

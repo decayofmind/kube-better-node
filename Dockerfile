@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine as builder
+FROM golang:1.16.6 as builder
 
 WORKDIR /build
 
@@ -8,10 +8,12 @@ RUN go mod download
 
 COPY main.go ./
 
-RUN go build
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
 
 FROM scratch
 
-COPY --from=builder /build/kube-betternode /
+USER 1000
 
-ENTRYPOINT ["/kube-betternode"]
+COPY --from=builder /build/kube-better-node /bin/kube-better-node
+
+ENTRYPOINT ["/bin/kube-better-node"]
