@@ -16,8 +16,10 @@ import (
 )
 
 func main() {
-	dryRun := flag.Bool("dry-run", false, "Dry Run")
-	tolerance := flag.Int("tolerance", 0, "Ignore certain weight difference")
+	var (
+		dryRun    = flag.Bool("dry-run", false, "Dry Run")
+		tolerance = flag.Int("tolerance", 0, "Ignore certain weight difference")
+	)
 	flag.Parse()
 
 	config, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
@@ -57,7 +59,10 @@ func main() {
 					if err != nil {
 						panic(err.Error())
 					}
+					logrus.Infof("Pod %v/%v has been evicted!\n", pod.Namespace, pod.Name)
 				}
+			} else {
+				logrus.Info("No Pods to evict\n")
 			}
 		}
 	}
